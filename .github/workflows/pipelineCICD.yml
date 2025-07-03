@@ -1,6 +1,9 @@
 name: Pipeline CI/CD
 
-on: [push]
+on:
+  push:
+    branches:
+      - creacion-yml-ci-cd
 
 permissions:
   pull-requests: read
