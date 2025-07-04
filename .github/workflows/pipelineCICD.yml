@@ -48,6 +48,6 @@ jobs:
           project: 'matias-avila_laboratorio-final'
           path: './'
           format: 'HTML'
-          format: 'JSON'
+          format: 'ALL'
           out: 'dependency-check-report'
         continue-on-error: false
