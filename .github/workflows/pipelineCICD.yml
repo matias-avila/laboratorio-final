@@ -75,3 +75,15 @@ jobs:
       - name: Publicar imagen en DockerHub
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/laboratorio-final:prueba
+  ImageSecurity:
+    needs: Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Escanear imagen Docker con Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/laboratorio-final:prueba'
+          format: 'table'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          exit-code: '1'
