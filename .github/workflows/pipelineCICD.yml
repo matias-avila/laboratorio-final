@@ -23,7 +23,7 @@ jobs:
             -Dsonar.organization=matias-avila
           projectBaseDir: .
       - name: Validar Quality Gate
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
         with:
           args: >
             -Dsonar.qualitygate.wait=true
