@@ -49,4 +49,5 @@ jobs:
           path: './'
           format: 'ALL'
           out: 'dependency-check-report'
+          args: '--failOnCVSS 4.0'
         continue-on-error: false
