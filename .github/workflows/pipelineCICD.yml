@@ -46,7 +46,8 @@ jobs:
         uses: dependency-check/Dependency-Check_Action@main
         with:
           project: 'matias-avila_laboratorio-final'
-          scanPath: './'
-          format: 'HTML,JSON'
+          path: './'
+          format: 'HTML'
+          format: 'JSON'
           out: 'dependency-check-report'
         continue-on-error: false
