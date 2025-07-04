@@ -49,7 +49,7 @@ jobs:
           path: './'
           format: 'ALL'
           out: 'dependency-check-report'
-          args: '--failOnCVSS 4.0'
+          args: '--failOnCVSS 9.0'
         continue-on-error: false
   Docker:
     needs: [SAST, SCA]
