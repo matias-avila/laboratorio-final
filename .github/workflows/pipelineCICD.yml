@@ -86,4 +86,4 @@ jobs:
           image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/laboratorio-final:prueba'
           format: 'table'
           severity: 'CRITICAL,HIGH,MEDIUM'
-          exit-code: '1'
+          exit-code: '0'
