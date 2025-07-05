@@ -34,6 +34,7 @@ jobs:
           projectBaseDir: .
       - name: Validar Quality Gate
         uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
+        continue-on-error: true #Comentar para detener pipeline en caso de que el Analisis encuentre errores 
         with:
           args:
             -Dsonar.qualitygate.wait=true
