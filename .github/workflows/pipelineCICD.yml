@@ -64,6 +64,12 @@ jobs:
           args: '--failOnCVSS 4.0'
         continue-on-error: true #false para detener y true para no detener el pipeline
 
+      - name: Subir reporte OWASP Dependency Check
+        uses: actions/upload-artifact@v3
+        with:
+          name: dependency-check-report
+          path: dependency-check-report/
+
   Docker:
     needs: [SAST, SCA]
     runs-on: ubuntu-latest
