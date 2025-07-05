@@ -65,7 +65,7 @@ jobs:
         continue-on-error: true #false para detener y true para no detener el pipeline
 
       - name: Subir reporte OWASP Dependency Check
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dependency-check-report
           path: dependency-check-report/
