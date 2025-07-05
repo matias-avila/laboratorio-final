@@ -4,14 +4,6 @@ import * as admin from "firebase-admin";
 admin.initializeApp();
 const db = admin.firestore();
 
-// ⚠️ Esto es una mala práctica a propósito (NO lo dejes en producción)
-const apiKey = "12345-SECRET-KEY-HARDCODED";
-const apiKey = "AKIAIOSFODNN7EXAMPLE"; // patrón típico de clave AWS
-const jwtSecret = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
-
-console.log("API Key:", apiKey);
-
-
 export const createUserDocument = functions.auth
   .user()
   .onCreate(async (user) => {
