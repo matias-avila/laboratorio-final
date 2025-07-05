@@ -131,7 +131,7 @@ jobs:
       - name: Ejecutar análisis DAST con OWASP ZAP
         run: |
           docker run -t owasp/zap2docker-stable zap-baseline.py \
-            -t http://${{ 0.tcp.ngrok.io }} \
+            -t http://${{ secrets.DOCKER_HOST }} \
             -r zap-report.html || true
 
       - name: Subir reporte ZAP como artefacto
