@@ -13,8 +13,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Analisis SonarCloud
+      - name: Checkout del código
+        uses: actions/checkout@v4
 
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Construir el proyecto
+        run: npm run build
+
+      - name: Analisis SonarCloud
         uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
