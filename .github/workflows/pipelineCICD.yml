@@ -52,7 +52,7 @@ jobs:
           format: 'ALL'
           out: 'dependency-check-report'
           args: '--failOnCVSS 4.0'
-        continue-on-error: true #Cambiar a true para no detener el pipeline
+        continue-on-error: false #Cambiar a true para no detener el pipeline
 
   Docker:
     needs: [SAST, SCA]
@@ -90,26 +90,26 @@ jobs:
           image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/laboratorio-final:prueba'
           format: 'table'
           severity: 'CRITICAL,HIGH,MEDIUM'
-          exit-code: '0' #Cambiar a 0 para no detener el pipeline
+          exit-code: '1' #Cambiar a 0 para no detener el pipeline
 
-  SSH-Test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Probar conexión SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.DOCKER_HOST }}
-          username: ${{ secrets.DOCKER_USER }}
-          key: ${{ secrets.DOCKER_SSH_KEY }}
-          script: |
-            echo "Conexión SSH exitosa a $HOSTNAME"
+  # SSH-Test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Probar conexión SSH
+  #       uses: appleboy/ssh-action@v1.0.3
+  #       with:
+  #         host: ${{ secrets.DOCKER_HOST }}
+  #         username: ${{ secrets.DOCKER_USER }}
+  #         key: ${{ secrets.DOCKER_SSH_KEY }}
+  #         script: |
+  #           echo "Conexión SSH exitosa a $HOSTNAME"
 
-  Deploy:
+  Despliegue:
     needs: ImageSecurity
     runs-on: ubuntu-latest
 
     steps:
-      - name: Desplegar en Docker remoto por SSH
+      - name: Desplegar Docker remoto por SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.DOCKER_HOST }}
@@ -118,10 +118,24 @@ jobs:
           script: |
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/laboratorio-final:prueba
 
-            # Detener y eliminar contenedor previo si existe
             docker stop laboratorio-final || true
             docker rm laboratorio-final || true
 
-            # Ejecutar nuevo contenedor
             docker run -d --name laboratorio-final -p 80:3000 \
               ${{ secrets.DOCKERHUB_USERNAME }}/laboratorio-final:prueba
+
+  DAST:
+    needs: Despliegue
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ejecutar análisis DAST con OWASP ZAP
+        run: |
+          docker run -t owasp/zap2docker-stable zap-baseline.py \
+            -t http://${{ 0.tcp.ngrok.io }} \
+            -r zap-report.html || true
+
+      - name: Subir reporte ZAP como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: zap-report.html
