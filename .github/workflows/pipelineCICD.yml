@@ -8,6 +8,7 @@ on:
 permissions:
   pull-requests: read
 jobs:
+
   SAST:
     runs-on: ubuntu-latest
 
@@ -31,6 +32,7 @@ jobs:
             -Dsonar.organization=matias-avila
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   SCA:
     needs: SAST
     runs-on: ubuntu-latest
@@ -49,8 +51,9 @@ jobs:
           path: './'
           format: 'ALL'
           out: 'dependency-check-report'
-          args: '--failOnCVSS 9.0'
-        continue-on-error: true
+          args: '--failOnCVSS 4.0'
+        continue-on-error: true #Cambiar a true para no detener el pipeline
+
   Docker:
     needs: [SAST, SCA]
     runs-on: ubuntu-latest
@@ -75,6 +78,7 @@ jobs:
       - name: Publicar imagen en DockerHub
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/laboratorio-final:prueba
+
   ImageSecurity:
     needs: Docker
     runs-on: ubuntu-latest
@@ -86,4 +90,38 @@ jobs:
           image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/laboratorio-final:prueba'
           format: 'table'
           severity: 'CRITICAL,HIGH,MEDIUM'
-          exit-code: '0'
+          exit-code: '0' #Cambiar a 0 para no detener el pipeline
+
+  SSH-Test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probar conexión SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DOCKER_HOST }}
+          username: ${{ secrets.DOCKER_USER }}
+          key: ${{ secrets.DOCKER_SSH_KEY }}
+          script: |
+            echo "Conexión SSH exitosa a $HOSTNAME"
+
+  Deploy:
+    needs: ImageSecurity
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Desplegar en Docker remoto por SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DOCKER_HOST }}
+          username: ${{ secrets.DOCKER_USER }}
+          key: ${{ secrets.DOCKER_SSH_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/laboratorio-final:prueba
+
+            # Detener y eliminar contenedor previo si existe
+            docker stop laboratorio-final || true
+            docker rm laboratorio-final || true
+
+            # Ejecutar nuevo contenedor
+            docker run -d --name laboratorio-final -p 80:3000 \
+              ${{ secrets.DOCKERHUB_USERNAME }}/laboratorio-final:prueba
