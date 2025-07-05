@@ -4,6 +4,11 @@ import * as admin from "firebase-admin";
 admin.initializeApp();
 const db = admin.firestore();
 
+// ⚠️ Esto es una mala práctica a propósito (NO lo dejes en producción)
+const apiKey = "12345-SECRET-KEY-HARDCODED";
+console.log("API Key:", apiKey);
+
+
 export const createUserDocument = functions.auth
   .user()
   .onCreate(async (user) => {

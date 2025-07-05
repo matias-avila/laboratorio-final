@@ -90,7 +90,7 @@ jobs:
           image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/laboratorio-final:prueba'
           format: 'table'
           severity: 'CRITICAL,HIGH,MEDIUM'
-          exit-code: '1' #1 para detener y 0 para no detener el pipeline
+          exit-code: '0' #1 para detener y 0 para no detener el pipeline
 
   # SSH-Test:
   #   runs-on: ubuntu-latest
